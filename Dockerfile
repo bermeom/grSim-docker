@@ -1,13 +1,20 @@
 FROM ubuntu:14.04
+ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -y libcanberra-gtk3-module && apt-get install -y git build-essential cmake libqt4-dev libgl1-mesa-dev libglu1-mesa-dev libprotobuf-dev protobuf-compiler libode-dev libboost-dev
+RUN apt-get update && \
+    apt-get install -y libcanberra-gtk3-module && \
+    apt-get install -y git build-essential cmake \
+  	libqt4-dev libgl1-mesa-dev libglu1-mesa-dev \
+	libprotobuf-dev protobuf-compiler libode-dev libboost-dev
 
-RUN git clone https://github.com/szi/vartypes.git && cd vartypes && mkdir build && cd build && cmake .. && make && make install && cd ../..
+RUN git clone https://github.com/szi/vartypes.git && \
+   cd vartypes && mkdir build && cd build && cmake .. && \
+   make && make install && cd ../..
 
-RUN git clone https://github.com/mani-monaj/grSim.git && cd grSim && mkdir build && cd build && cmake .. && make 
+RUN git clone https://github.com/mani-monaj/grSim.git && \
+    cd grSim && mkdir build && cd build && cmake .. && make 
 
-RUN export QT_X11_NO_MITSHM=1
-# Replace 1000 with your user / group id
+ENV QT_X11_NO_MITSHM=1
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/developer && \
     echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
@@ -18,5 +25,5 @@ RUN export uid=1000 gid=1000 && \
 
 USER developer
 ENV HOME /home/developer
-CMD   QT_X11_NO_MITSHM=1 /grSim/bin/grsim
+CMD /grSim/bin/grsim
 
